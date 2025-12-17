@@ -1,23 +1,89 @@
 import React from 'react';
-import { Box, Flex, Button, useColorMode, Heading, Spacer } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
+import { 
+  Box, 
+  Flex, 
+  Button, 
+  useColorMode, 
+  Heading, 
+  Spacer,
+  useColorModeValue,
+  IconButton
+} from '@chakra-ui/react';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 
 export default function Navbar() {
   const { colorMode, toggleColorMode } = useColorMode();
+  const location = useLocation();
+  
+  const bgColor = useColorModeValue('white', 'gray.900');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <Box bg={colorMode === 'light' ? 'gray.100' : 'gray.900'} px={4} py={3} shadow="md">
+    <Box 
+      bg={bgColor}
+      borderBottomWidth="2px"
+      borderBottomColor={borderColor}
+      px={4} 
+      py={3} 
+      shadow="sm"
+      position="sticky"
+      top={0}
+      zIndex={1000}
+      backdropFilter="blur(10px)"
+    >
       <Flex alignItems="center" maxW="1200px" mx="auto">
-        <Heading size="md" mr={8}>Portfolio</Heading>
-        <Flex gap={4}>
-            <Button as={RouterLink} to="/" variant="ghost">Головна</Button>
-            <Button as={RouterLink} to="/labs" variant="ghost">Лаби</Button>
-            <Button as={RouterLink} to="/todo-list" colorScheme="blue" variant="solid">Todo</Button>
+        <Heading 
+          size="md"
+          mr={8}
+          bgGradient={colorMode === 'dark' 
+            ? 'linear(to-r, neon.400, cyan.400)' 
+            : 'linear(to-r, neon.500, cyan.500)'}
+          bgClip="text"
+          fontWeight="bold"
+        >
+          Student Portfolio
+        </Heading>
+        <Flex gap={2}>
+          <Button 
+            as={RouterLink} 
+            to="/" 
+            variant={isActive('/') ? 'solid' : 'ghost'}
+            colorScheme={isActive('/') ? 'neon' : 'gray'}
+            size="sm"
+          >
+            Головна
+          </Button>
+          <Button 
+            as={RouterLink} 
+            to="/labs" 
+            variant={isActive('/labs') ? 'solid' : 'ghost'}
+            colorScheme={isActive('/labs') ? 'cyan' : 'gray'}
+            size="sm"
+          >
+            Лаби
+          </Button>
+          <Button 
+            as={RouterLink} 
+            to="/todo-list" 
+            variant={isActive('/todo-list') ? 'solid' : 'ghost'}
+            colorScheme={isActive('/todo-list') ? 'neon' : 'gray'}
+            size="sm"
+          >
+            Todo
+          </Button>
         </Flex>
         <Spacer />
-        <Button onClick={toggleColorMode} size="sm">
-          {colorMode === 'light' ? '🌙' : '☀️'}
-        </Button>
+        <IconButton
+          icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+          onClick={toggleColorMode}
+          aria-label="Toggle color mode"
+          colorScheme="cyan"
+          variant="ghost"
+          size="md"
+        />
       </Flex>
     </Box>
   );

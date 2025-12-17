@@ -1,22 +1,24 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Box, Container } from '@chakra-ui/react';
+import { Box, useColorModeValue } from '@chakra-ui/react';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Labs from './pages/Labs';
 import TodoPage from './pages/TodoPage';
 
 function App() {
+  const bgColor = useColorModeValue('gray.50', 'gray.900');
+
   return (
-    <Box minH="100vh">
+    <Box minH="100vh" bg={bgColor}>
       <Navbar />
-      <Container maxW="1200px" mt={8}>
+      <Box as="main" py={8}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/labs" element={<Labs />} />
           <Route path="/todo-list" element={<TodoPage />} />
         </Routes>
-      </Container>
+      </Box>
     </Box>
   );
 }

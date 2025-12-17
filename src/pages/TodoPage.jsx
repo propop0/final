@@ -1,68 +1,134 @@
-import React, { useEffect } from 'react';
-import { 
-  Box, Button, Input, VStack, Text, Checkbox, 
-  Flex, Spinner, IconButton, Badge, Container, Heading 
+import React, { useEffect, useMemo, memo } from 'react';
+import {
+  VStack, Text, Flex, Spinner, Container, Heading, Box, useColorMode
 } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons'; 
 import { useTodoStore } from '../store/useTodoStore';
+import TodoItem from '../components/TodoItem';
+import TodoForm from '../components/TodoForm';
+import SearchBar from '../components/SearchBar';
+import Pagination from '../components/Pagination';
 
-export default function TodoPage() {
-  const { 
-    todos, isLoading, error, searchTerm, 
-    fetchTodos, addTodo, deleteTodo, toggleTodo, setSearchTerm,
-    currentPage, goToNextPage, goToPrevPage 
-  } = useTodoStore();
+const TodoPage = memo(() => {
+  const todos = useTodoStore((state) => state.todos);
+  const isLoading = useTodoStore((state) => state.isLoading);
+  const error = useTodoStore((state) => state.error);
+  const searchTerm = useTodoStore((state) => state.searchTerm);
+  const totalTodos = useTodoStore((state) => state.totalTodos);
+  const limitPerPage = useTodoStore((state) => state.limitPerPage);
+  const currentPage = useTodoStore((state) => state.currentPage);
+  const fetchTodos = useTodoStore((state) => state.fetchTodos);
+  const addTodo = useTodoStore((state) => state.addTodo);
+  const deleteTodo = useTodoStore((state) => state.deleteTodo);
+  const toggleTodo = useTodoStore((state) => state.toggleTodo);
+  const updateTodo = useTodoStore((state) => state.updateTodo);
+  const setSearchTerm = useTodoStore((state) => state.setSearchTerm);
+  const goToNextPage = useTodoStore((state) => state.goToNextPage);
+  const goToPrevPage = useTodoStore((state) => state.goToPrevPage);
 
-  useEffect(() => { fetchTodos(); }, [fetchTodos]);
+  const { colorMode } = useColorMode();
 
-  const filteredTodos = todos.filter(t => 
-    t.text.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    fetchTodos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
 
-  const handleAdd = (e) => {
-    e.preventDefault();
-    const val = e.target.elements.todoText.value;
-    if(val.trim()) {
-        addTodo(val);
-        e.target.reset();
-    }
-  }
+  const filteredTodos = useMemo(() => {
+    if (!searchTerm) return todos;
+    return todos.filter(t =>
+      t.text.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [todos, searchTerm]);
+
+  const hasNextPage = useMemo(() => {
+    const apiTodos = todos.filter(t => !t.isLocal);
+    const totalPages = Math.ceil(totalTodos / limitPerPage);
+    return currentPage < totalPages;
+  }, [todos, totalTodos, limitPerPage, currentPage]);
 
   return (
-    <Container maxW="container.md" py={5}>
-        <Heading mb={6} textAlign="center">Todo List</Heading>
-        <Input 
-            placeholder="Search..." mb={4} value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+    <Container maxW="container.md" py={8}>
+      <Heading
+        mb={8}
+        textAlign="center"
+        bgGradient={colorMode === 'dark'
+          ? 'linear(to-r, neon.400, cyan.400)'
+          : 'linear(to-r, neon.500, cyan.500)'}
+        bgClip="text"
+        fontSize="3xl"
+        fontWeight="bold"
+      >
+        Список Завдань
+      </Heading>
+
+      <VStack spacing={4} align="stretch">
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
         />
-        <form onSubmit={handleAdd}>
-            <Flex gap={2} mb={6}>
-                <Input name="todoText" placeholder="New task..." />
-                <Button type="submit" colorScheme="blue">Add</Button>
-            </Flex>
-        </form>
 
-        {isLoading && <Flex justify="center"><Spinner /></Flex>}
-        {error && <Text color="red.500">{error}</Text>}
+        <TodoForm onSubmit={addTodo} />
 
-        <VStack spacing={3} align="stretch">
+        {isLoading && (
+          <Flex justify="center" py={8}>
+            <Spinner size="xl" color="neon.500" thickness="4px" />
+          </Flex>
+        )}
+
+        {error && (
+          <Box
+            p={4}
+            borderRadius="md"
+            bg="red.50"
+            borderColor="red.200"
+            borderWidth="1px"
+            _dark={{ bg: 'red.900', borderColor: 'red.700' }}
+          >
+            <Text color="red.500" fontWeight="medium">
+              Помилка: {error}
+            </Text>
+          </Box>
+        )}
+
+        {!isLoading && !error && filteredTodos.length === 0 && (
+          <Box
+            p={8}
+            textAlign="center"
+            borderRadius="md"
+            bg={colorMode === 'dark' ? 'gray.800' : 'gray.100'}
+          >
+            <Text color="gray.500" fontSize="lg">
+              {searchTerm ? 'Завдань не знайдено' : 'Немає завдань'}
+            </Text>
+          </Box>
+        )}
+
+        {!isLoading && filteredTodos.length > 0 && (
+          <VStack spacing={3} align="stretch">
             {filteredTodos.map(todo => (
-                <Flex key={todo.id} p={4} borderWidth="1px" borderRadius="lg" justify="space-between" align="center">
-                    <Flex align="center" gap={3}>
-                        <Checkbox isChecked={todo.completed} onChange={() => toggleTodo(todo.id)} />
-                        <Text as={todo.completed ? "s" : "span"}>{todo.text}</Text>
-                        {todo.isLocal && <Badge>Local</Badge>}
-                    </Flex>
-                    <IconButton icon={<DeleteIcon />} colorScheme="red" size="sm" onClick={() => deleteTodo(todo.id)} />
-                </Flex>
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onToggle={toggleTodo}
+                onDelete={deleteTodo}
+                onUpdate={updateTodo}
+              />
             ))}
-        </VStack>
+          </VStack>
+        )}
 
-        <Flex justify="center" gap={4} mt={6}>
-            <Button onClick={goToPrevPage} isDisabled={currentPage === 1}>Prev</Button>
-            <Text alignSelf="center">Page {currentPage}</Text>
-            <Button onClick={goToNextPage}>Next</Button>
-        </Flex>
+        {!isLoading && !searchTerm && (
+          <Pagination
+            currentPage={currentPage}
+            onPrev={goToPrevPage}
+            onNext={goToNextPage}
+            hasNext={hasNextPage}
+          />
+        )}
+      </VStack>
     </Container>
   );
-}
+});
+
+TodoPage.displayName = 'TodoPage';
+
+export default TodoPage;

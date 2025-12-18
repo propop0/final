@@ -45,7 +45,7 @@ const labConfig = [
     title: 'Lab 5-6',
     fullTitle: 'Лабораторна робота 5-6',
     url: 'https://lab-5-6.vercel.app/',
-    description: 'Ранні лабораторні роботи з HTML/CSS'
+    description: 'To-do list lab'
   }
 ];
 

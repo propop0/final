@@ -5,7 +5,7 @@ const BASE_URL = "https://dummyjson.com";
 
 export const useTodoStore = create((set, get) => ({
   todos: [],
-  localTodos: [], // Локальні завдання зберігаються окремо
+  localTodos: [],
   isLoading: false,
   error: null,
   currentPage: 1,
@@ -62,10 +62,10 @@ export const useTodoStore = create((set, get) => ({
 
   updateTodo: (id, newText) => {
     set((state) => ({
-      todos: state.todos.map((t) => 
+      todos: state.todos.map((t) =>
         t.id === id ? { ...t, text: newText } : t
       ),
-      localTodos: state.localTodos.map((t) => 
+      localTodos: state.localTodos.map((t) =>
         t.id === id ? { ...t, text: newText } : t
       )
     }));

@@ -40,7 +40,6 @@ const TodoPage = memo(() => {
   }, [todos, searchTerm]);
 
   const hasNextPage = useMemo(() => {
-    const apiTodos = todos.filter(t => !t.isLocal);
     const totalPages = Math.ceil(totalTodos / limitPerPage);
     return currentPage < totalPages;
   }, [todos, totalTodos, limitPerPage, currentPage]);

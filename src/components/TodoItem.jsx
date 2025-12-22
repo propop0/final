@@ -1,4 +1,4 @@
-import React, { useState, memo, useCallback, useEffect } from 'react';
+import React, { useState, memo, useCallback, useEffect, useRef } from 'react';
 import {
   Flex,
   Checkbox,
@@ -14,11 +14,14 @@ const TodoItem = memo(({ todo, onToggle, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
   const { colorMode } = useColorMode();
+  const prevTodoTextRef = useRef(todo.text);
 
-  // Оновлюємо editText коли todo.text змінюється
+  // Синхронізуємо editText з todo.text тільки коли він змінився ззовні і ми не редагуємо
   useEffect(() => {
-    if (!isEditing) {
+    if (!isEditing && prevTodoTextRef.current !== todo.text) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEditText(todo.text);
+      prevTodoTextRef.current = todo.text;
     }
   }, [todo.text, isEditing]);
 

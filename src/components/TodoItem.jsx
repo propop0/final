@@ -1,12 +1,12 @@
 import React, { useState, memo, useCallback, useEffect } from 'react';
-import { 
-  Flex, 
-  Checkbox, 
-  Text, 
-  IconButton, 
-  Input, 
+import {
+  Flex,
+  Checkbox,
+  Text,
+  IconButton,
+  Input,
   Badge,
-  useColorMode 
+  useColorMode
 } from '@chakra-ui/react';
 import { DeleteIcon, EditIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
 

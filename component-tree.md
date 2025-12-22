@@ -1,13 +1,22 @@
 ```mermaid
 classDiagram
   class App {
-    renders Navbar, Routes
+    renders Layout
+  }
+
+  class Layout {
+    renders Navbar, children
+    uses useColorModeValue
+  }
+
+  class AppRoutes {
+    renders Routes, Route[]
     routes: Home, Labs, TodoPage
   }
 
   class Navbar {
     state: colorMode
-    uses useLocation
+    uses useLocation, useColorMode
     renders Button[], IconButton
   }
 
@@ -56,10 +65,12 @@ classDiagram
     uses useColorMode
   }
 
-  App --> Navbar : renders
-  App --> Home : route "/"
-  App --> Labs : route "/labs"
-  App --> TodoPage : route "/todo-list"
+  App --> Layout : renders
+  Layout --> Navbar : renders
+  Layout --> AppRoutes : children
+  AppRoutes --> Home : route "/"
+  AppRoutes --> Labs : route "/labs"
+  AppRoutes --> TodoPage : route "/todo-list"
   TodoPage --> useTodoStore : hook
   TodoPage --> SearchBar : value, onChange ↓
   TodoPage --> TodoForm : onSubmit ↓
@@ -70,4 +81,3 @@ classDiagram
   TodoItem ..> TodoPage : onToggle(id), onDelete(id), onUpdate(id, text) ↑
   Pagination ..> TodoPage : onPrev(), onNext() ↑
 ```
-

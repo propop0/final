@@ -1,146 +1,68 @@
 # Student Portfolio
 
-Веб-застосунок (SPA) портфоліо студента, що демонструє навички роботи з сучасним стеком React.
+Мій студентський веб-застосунок-портфоліо, який я зробив для демонстрації навичок роботи з React та сучасними бібліотеками.
 
-## Технологічний стек
+## Що використано
 
-- **React 18+** з Vite
-- **React Router DOM v6** для маршрутизації
-- **Chakra UI** для компонентів та темної теми
-- **Zustand** для управління глобальним станом
-- **Axios** для HTTP запитів
-- **React Icons** для іконок
+- **React 19** з Vite (швидкий збірщик)
+- **React Router DOM** - для навігації між сторінками
+- **Chakra UI** - бібліотека готових компонентів, дуже зручна для швидкої розробки
+- **Zustand** - легка бібліотека для управління станом (замість складного Redux)
+- **Axios** - для запитів до API
+- **React Icons** - іконки
 
-## Функціональність
+## Що є в проекті
 
 ### Сторінки
 
-1. **Головна (Home)** - привітання та опис проєкту
-2. **Лабораторні (Labs)** - список виконаних лабораторних робіт з посиланнями
-3. **Todo App** - повнофункціональний список завдань
+1. **Головна** - про мене та технології, які використав
+2. **Лаби** - мої попередні лабораторні роботи, які показуються через iframe
+3. **Todo App** - список завдань з можливістю додавати, видаляти, редагувати та шукати
 
-### Todo App функціонал
+### Про Todo App
 
-- Завантаження завдань з API (dummyjson.com/todos)
-- Додавання локальних завдань
-- Видалення завдань
-- Редагування тексту завдань (клік на текст або кнопка редагування)
-- Відмітка виконано/не виконано
-- Пошук/фільтрація завдань
-- Пагінація для API завдань
-- Збереження стану при переході між сторінками (Zustand)
+Завдання завантажуються з API (dummyjson.com), але можна також додавати свої локальні завдання. Є пошук, пагінація, можна відмічати виконані та редагувати текст. Все зберігається в Zustand store, тому стан не втрачається при переході між сторінками.
 
 ## Дизайн
 
-- Неоново-зелений та ціановий кольори
-- Підтримка світлої та темної теми
-- Адаптивний дизайн
-- Мінімізація ререндерингу через memo та useMemo
+Використав неоново-зелений та ціановий кольори, є світла і темна тема (перемикається кнопкою в навбарі). Дизайн адаптивний, працює на різних екранах. Для оптимізації використав memo та useMemo, щоб не було зайвих ререндерів.
 
-## Запуск проєкту
+## Як запустити
 
 ```bash
-# Встановлення залежностей
+# Спочатку встанови залежності
 npm install
 
-# Запуск dev сервера
+# Потім запусти dev сервер
 npm run dev
 
-# Збірка для продакшн
+# Для продакшн збірки
 npm run build
 ```
 
-## Структура проєкту
+## Структура проекту
 
 ```
 src/
-├── components/      # Перевикористовувані компоненти
-│   ├── Navbar.jsx
-│   ├── TodoItem.jsx
-│   ├── TodoForm.jsx
-│   ├── SearchBar.jsx
-│   └── Pagination.jsx
-├── pages/          # Сторінки застосунку
-│   ├── Home.jsx
-│   ├── Labs.jsx
-│   └── TodoPage.jsx
-├── store/          # Zustand store
-│   └── useTodoStore.js
-├── theme.js        # Кастомна тема Chakra UI
-├── App.jsx
-└── main.jsx
+├── components/          # Компоненти
+│   ├── Navbar.jsx      # Навігаційне меню
+│   ├── Layout.jsx      # Основний лейаут з Navbar
+│   ├── AppRoutes.jsx   # Всі роути
+│   ├── TodoItem.jsx    # Один елемент todo
+│   ├── TodoForm.jsx    # Форма для додавання todo
+│   ├── SearchBar.jsx   # Поле пошуку
+│   └── Pagination.jsx  # Пагінація
+├── pages/              # Сторінки
+│   ├── Home.jsx        # Головна сторінка
+│   ├── Labs.jsx        # Сторінка з лабами
+│   └── TodoPage.jsx    # Сторінка з todo
+├── store/              # Zustand store
+│   └── useTodoStore.js # Store для todo завдань
+├── theme.js            # Кастомна тема для Chakra UI
+├── App.jsx             # Головний компонент
+└── main.jsx            # Точка входу
 ```
 
 ## Дерево компонентів
 
-```mermaid
-classDiagram
-  class App {
-    renders Navbar, Routes
-    routes: Home, Labs, TodoPage
-  }
-
-  class Navbar {
-    state: colorMode
-    uses useLocation
-    renders navigation buttons, theme toggle
-  }
-
-  class Home {
-    state: colorMode
-    renders welcome content
-  }
-
-  class Labs {
-    state: activeTab, colorMode
-    renders Tabs, iframes for labs
-  }
-
-  class TodoPage {
-    uses useTodoStore
-    renders SearchBar, TodoForm, TodoItem[], Pagination
-  }
-
-  class useTodoStore {
-    state: todos[], localTodos[], isLoading, error
-    state: currentPage, limitPerPage, totalTodos
-    state: searchTerm
-    methods: fetchTodos, addTodo, deleteTodo, toggleTodo, updateTodo
-    methods: setSearchTerm, goToNextPage, goToPrevPage
-  }
-
-  class TodoForm {
-    props: onSubmit
-    renders form with input and submit button
-  }
-
-  class SearchBar {
-    props: value, onChange, placeholder
-    renders search input
-  }
-
-  class TodoItem {
-    state: isEditing, editText
-    props: todo, onToggle, onDelete, onUpdate
-    renders checkbox, text/input, edit/delete buttons
-  }
-
-  class Pagination {
-    props: currentPage, onPrev, onNext, hasNext
-    renders prev/next buttons, page number
-  }
-
-  App --> Navbar
-  App --> Home
-  App --> Labs
-  App --> TodoPage
-  TodoPage --> useTodoStore : hook
-  TodoPage --> SearchBar : value, onChange ↓
-  TodoPage --> TodoForm : onSubmit ↓
-  TodoPage --> TodoItem : todo, onToggle, onDelete, onUpdate ↓
-  TodoPage --> Pagination : currentPage, onPrev, onNext, hasNext ↓
-  TodoForm ..> TodoPage : onSubmit(text) ↑
-  SearchBar ..> TodoPage : onChange(term) ↑
-  TodoItem ..> TodoPage : onToggle(id), onDelete(id), onUpdate(id, newText) ↑
-  Pagination ..> TodoPage : onPrev(), onNext() ↑
-```
+Див. component-tree.md
